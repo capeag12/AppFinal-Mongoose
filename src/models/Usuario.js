@@ -4,6 +4,7 @@ const { default: isEmail } = require('validator/lib/isemail')
 const { validate } = require('./Curso')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+
 const EsquemaUsuario = new mongoose.Schema({
     nombre:{
         type:String, 
