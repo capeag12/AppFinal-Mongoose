@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 
-const Curso = mongoose.model("Curso",{
+const Juego = mongoose.model("Curso",{
     nombre:{
         type:String,
         require:true,
         trim:true
     },
 
-    notaMedia:{
+    precio:{
         type:Number,
-        default:0
+        default:0,
+        require:true
     }
 })
 
-module.exports = Curso
+module.exports = Juego

@@ -2,8 +2,9 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const { default: isEmail } = require('validator/lib/isemail')
 const { validate } = require('./Curso')
-
-const EsquemaAlumno = new mongoose.Schema({
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const EsquemaUsuario = new mongoose.Schema({
     nombre:{
         type:String, 
         required:true,
@@ -27,13 +28,34 @@ const EsquemaAlumno = new mongoose.Schema({
             } 
         }
     },
-    curso:{
-        type:mongoose.Schema.Types.nombre,
-        ref:"Curso"
-    }
+    tokens:[{
+        token:{
+            type:String,
+            required:true
+        }
+    }]
+    
 
 })
 
-const Alumno = mongoose.model('Alumno',EsquemaAlumno)
+EsquemaUsuario.methods.toJSON = function (){
+    const usuario = this
+    const objUsuario = usuario.toObject()
 
-module.exports = Alumno
+    delete objUsuario.password
+    
+    return objUsuario
+}
+
+EsquemaUsuario.static.findByCredenciales = async (email, passwd)=>{
+    const usuario = await Usuario.findOne({email})
+
+    if (!user) {
+        throw new Error("No existe el email")
+    }
+
+}
+
+const Usuario = mongoose.model('Usuario',EsquemaUsuario)
+
+module.exports = Usuario
