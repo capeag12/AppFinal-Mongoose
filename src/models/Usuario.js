@@ -1,17 +1,16 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const { default: isEmail } = require('validator/lib/isemail')
-const { validate } = require('./Curso')
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const EsquemaUsuario = new mongoose.Schema({
+const esquemaUsuario = new mongoose.Schema({
     nombre:{
         type:String, 
         required:true,
         trim:true
     },
-    correoElectronico:{
+    email:{
         type:String,
         required:true,
         validate(value){
@@ -20,11 +19,11 @@ const EsquemaUsuario = new mongoose.Schema({
             }
         }
     },
-    contraseña:{
+    passwd:{
         type:String,
         required:true,
         validate(value){
-            if (value.toLowerCase().includes('contraseña') || value.toLowerCase().includes('1234')) {
+            if (value.toLowerCase().includes('passwd') || value.toLowerCase().includes('1234')) {
                 throw new Error("Formato invalido")
             } 
         }
@@ -39,24 +38,51 @@ const EsquemaUsuario = new mongoose.Schema({
 
 })
 
-EsquemaUsuario.methods.toJSON = function (){
-    const usuario = this
-    const objUsuario = usuario.toObject()
+esquemaUsuario.methods.toJSON = ()=>{
+    const user = this
+    const objUsuario = user.toObject()
 
     delete objUsuario.password
     
     return objUsuario
 }
 
-EsquemaUsuario.static.findByCredenciales = async (email, passwd)=>{
+esquemaUsuario.methods.generarTokenAuth= async ()=>{
+    const user = this
+    const token = jwt.sign({_id:user._id.toString()},"nuevoUsuario")
+
+    user.tokens = user.tokens.concat({token})
+    await user.save()
+
+    return token
+}
+
+esquemaUsuario.static.findByCredenciales = async (email, passwd)=>{
     const usuario = await Usuario.findOne({email})
 
     if (!user) {
         throw new Error("No existe el email")
     }
 
+    const encontrado = await bcrypt.compare(passwd,usuario.passwd)
+    
+    if (!encontrado) {
+        throw new Error("No se puede logear")
+    }
+
+    return usuario
+
 }
 
-const Usuario = mongoose.model('Usuario',EsquemaUsuario)
+esquemaUsuario.pre("save", async (next)=>{
+    const usuario = this
+    console.log(usuario)
+    console.log(usuario.passwd)
+    usuario.passwd = await bcrypt.hash(usuario.passwd,8)
+    next()
+
+})
+
+const Usuario = mongoose.model('Usuario',esquemaUsuario)
 
 module.exports = Usuario

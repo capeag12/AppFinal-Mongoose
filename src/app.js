@@ -1,12 +1,13 @@
 const express = require('express');
 require('./db/mongoose')
-const cursoRouter = require("./Routers/RouterJuegos")
-
+const juegosRouter = require("./Routers/RouterJuegos")
+const usuariosRouter = require("./Routers/RouterUsuario")
 const app = express()
 const port = process.env.PORT || 3000
 
 app.use(express.json())
-app.use(cursoRouter)
+app.use(juegosRouter)
+app.use(usuariosRouter)
 
 app.listen(port, ()=>{
     console.log("El server está despierto en el puerto "+port)
