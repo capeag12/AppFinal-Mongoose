@@ -15,13 +15,17 @@ router.post("/registrarUsuario", async (req,res)=>{
     }
 })
 
-router.post("usuarios/login", async (req,res)=>{
+router.post("/loginUsuario", async (req,res)=>{
+    console.log("Entrado")
     try {
-        const usuario = await Usuario.findByCredenciales(req.body.email, req.body.contraseña)
+        console.log("Entrado")
+        const usuario = await Usuario.findByCredenciales(req.body.email, req.body.passwd)
+        console.log("Entrado")
         const token = await usuario.generarTokenAuth()
+        console.log("Entrado")
         res.send({user,token})
     } catch (error) {
-        res.status(400).send()
+        res.status(400).send(error)
     }
 })
 

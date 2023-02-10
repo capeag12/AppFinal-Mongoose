@@ -76,8 +76,6 @@ esquemaUsuario.static.findByCredenciales = async function(email, passwd){
 
 esquemaUsuario.pre("save", async function(next){
     const usuario = this
-    console.log(usuario)
-    console.log(usuario.passwd)
     usuario.passwd = await bcrypt.hash(usuario.passwd,8)
     next()
 
