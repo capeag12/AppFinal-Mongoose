@@ -38,16 +38,16 @@ const esquemaUsuario = new mongoose.Schema({
 
 })
 
-esquemaUsuario.methods.toJSON = ()=>{
+esquemaUsuario.methods.toJSON = function(){
     const user = this
     const objUsuario = user.toObject()
 
-    delete objUsuario.password
+    delete objUsuario.passwd
     
     return objUsuario
 }
 
-esquemaUsuario.methods.generarTokenAuth= async ()=>{
+esquemaUsuario.methods.generarTokenAuth= async function(){
     const user = this
     const token = jwt.sign({_id:user._id.toString()},"nuevoUsuario")
 
@@ -57,7 +57,7 @@ esquemaUsuario.methods.generarTokenAuth= async ()=>{
     return token
 }
 
-esquemaUsuario.static.findByCredenciales = async (email, passwd)=>{
+esquemaUsuario.static.findByCredenciales = async function(email, passwd){
     const usuario = await Usuario.findOne({email})
 
     if (!user) {
@@ -74,7 +74,7 @@ esquemaUsuario.static.findByCredenciales = async (email, passwd)=>{
 
 }
 
-esquemaUsuario.pre("save", async (next)=>{
+esquemaUsuario.pre("save", async function(next){
     const usuario = this
     console.log(usuario)
     console.log(usuario.passwd)

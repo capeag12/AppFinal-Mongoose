@@ -9,11 +9,8 @@ router.post("/registrarUsuario", async (req,res)=>{
     try {
         await usuario.save()
         const token = await usuario.generarTokenAuth()
-        console.log(token)
-        console.log({usuario,token})
         res.status(201).send({usuario,token})
     } catch (error) {
-        console.log(error)
         res.status(400).send(error)
     }
 })
