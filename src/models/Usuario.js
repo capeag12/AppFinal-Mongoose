@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const { default: isEmail } = require('validator/lib/isemail')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Juego = require('./Juego')
 
 const esquemaUsuario = new mongoose.Schema({
     nombre:{
@@ -38,18 +39,25 @@ const esquemaUsuario = new mongoose.Schema({
 
 })
 
+esquemaUsuario.virtual('juegos', {
+    ref: 'Juego',
+    localField: '_id',
+    foreignField: 'seller'
+})
+
 esquemaUsuario.methods.toJSON = function(){
     const user = this
     const objUsuario = user.toObject()
 
     delete objUsuario.passwd
+    delete objUsuario.tokens
     
     return objUsuario
 }
 
 esquemaUsuario.methods.generarTokenAuth= async function(){
     const user = this
-    const token = jwt.sign({_id:user._id.toString()},"nuevoUsuario")
+    const token = jwt.sign({_id:user._id.toString()},"nuevousuario")
 
     user.tokens = user.tokens.concat({token})
     await user.save()
@@ -57,26 +65,36 @@ esquemaUsuario.methods.generarTokenAuth= async function(){
     return token
 }
 
-esquemaUsuario.static.findByCredenciales = async function(email, passwd){
+esquemaUsuario.statics.findByCredenciales = async function(email,contraUsu){
     const usuario = await Usuario.findOne({email})
 
-    if (!user) {
-        throw new Error("No existe el email")
+    if (!usuario) {
+        throw new Error("No se encontró el usuario")
     }
-
-    const encontrado = await bcrypt.compare(passwd,usuario.passwd)
     
-    if (!encontrado) {
-        throw new Error("No se puede logear")
+    const iguales =await bcrypt.compare(contraUsu,usuario.passwd)
+    console.log(iguales)
+    if (!iguales) {
+        throw new Error("Las contraseñas no coinciden")
     }
-
-    return usuario
+    else return usuario;
 
 }
 
 esquemaUsuario.pre("save", async function(next){
     const usuario = this
-    usuario.passwd = await bcrypt.hash(usuario.passwd,8)
+
+    if (usuario.isModified('passwd')) {
+        usuario.passwd = await bcrypt.hash(usuario.passwd,8)
+    }
+    
+    next()
+
+})
+
+esquemaUsuario.pre("remove", async function(next){
+    const usuario = this
+    await Juego.deleteMany({seller:usuario._id})
     next()
 
 })

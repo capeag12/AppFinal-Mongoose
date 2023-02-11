@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Juego = mongoose.model("Curso",{
+const Juego = mongoose.model("Juego",{
     nombre:{
         type:String,
         require:true,
@@ -11,6 +11,12 @@ const Juego = mongoose.model("Curso",{
         type:Number,
         default:0,
         require:true
+    },
+
+    seller:{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref:"Usuario"
     }
 })
 
