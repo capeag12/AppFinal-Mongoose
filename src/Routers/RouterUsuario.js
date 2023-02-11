@@ -5,7 +5,13 @@ const router = new express.Router()
 
 router.post("/registrarUsuario", async (req,res)=>{
     const usuario = new Usuario(req.body)
+    let findUsu = await Usuario.exists({email:usuario.email})
     
+    console.log(findUsu)
+
+    if (findUsu) {
+        return res.status(400).send("Este mail ya está registrado")
+    }
     try {
         await usuario.save()
         const token = await usuario.generarTokenAuth()
@@ -23,6 +29,16 @@ router.post("/loginUsuario", async (req,res)=>{
     } catch (error) {
         res.status(400).send("No se a podido logear")
     }
+})
+
+router.post("/loginUsuarioToken", auth, async(req,res)=>{
+    try{
+        res.status(200).send(req.usuario)
+    }
+    catch(e){
+        req.status(400).send("No se ha podido loguear con este token")
+    }
+
 })
 
 router.post("/logout", auth,async (req, res)=>{
