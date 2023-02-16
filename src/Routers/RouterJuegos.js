@@ -2,6 +2,7 @@ const { calculateObjectSize } = require('bson')
 const express = require('express')
 const auth = require('../middleware/auth')
 const Juego = require('../models/Juego')
+const Usuario = require('../models/Usuario')
 const router = new express.Router()
 
 router.get("/obtenerJuegos",async(req,res)=>{
@@ -28,6 +29,16 @@ router.get("/obtenerJuego/:id", async(req,res)=>{
         res.status(500).send()
     }
 
+})
+
+router.get("/obtenerJuegosUsuario", auth, async(req,res)=>{
+    try{
+        let usuario = await Usuario.findById(req.usuario._id).populate('juegos')
+        res.send(usuario.juegos)
+    }catch(e){
+        console.log(e)
+        res.status(500).send()
+    }
 })
 
 router.post("/addJuego", auth, async(req,res)=>{

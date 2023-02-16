@@ -1,5 +1,6 @@
 const express = require("express")
 const auth = require("../middleware/auth")
+const Juego = require("../models/Juego")
 const Usuario = require("../models/Usuario")
 const router = new express.Router()
 
@@ -38,6 +39,17 @@ router.post("/loginUsuarioToken", auth, async(req,res)=>{
     catch(e){
         req.status(400).send("No se ha podido loguear con este token")
     }
+
+})
+
+//Acepta el id del juego
+router.post("/usuario/comprarJuego/:id", auth, async(req,res)=>{
+    let juego = await Juego.findById(req.params.id)
+    juego.usuariosCompradores.push(req.usuario._id)
+    juego.save()
+
+    let usuario = await Usuario.findById(req.usuario._id).populate('juegosComprados')
+    res.send(usuario.juegosComprados)
 
 })
 

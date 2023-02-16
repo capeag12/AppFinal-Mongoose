@@ -37,12 +37,20 @@ const esquemaUsuario = new mongoose.Schema({
     }]
     
 
+},{
+    toJSON: {virtuals: true}
 })
 
 esquemaUsuario.virtual('juegos', {
     ref: 'Juego',
     localField: '_id',
     foreignField: 'seller'
+})
+
+esquemaUsuario.virtual('juegosComprados', {
+    ref: 'Juego',
+    localField: '_id',
+    foreignField: 'usuariosCompradores'
 })
 
 esquemaUsuario.methods.toJSON = function(){

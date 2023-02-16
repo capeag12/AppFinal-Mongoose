@@ -13,11 +13,17 @@ const Juego = mongoose.model("Juego",{
         require:true
     },
 
-    seller:{
+    seller: {
         type: mongoose.Schema.Types.ObjectId,
         required:true,
         ref:"Usuario"
-    }
+    },
+    usuariosCompradores:[{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref:"Usuario"
+    }]
+    
 })
 
 module.exports = Juego
