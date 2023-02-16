@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Juego = mongoose.model("Juego",{
+const esquemaJuego = new mongoose.Schema({
     nombre:{
         type:String,
         require:true,
@@ -24,6 +24,19 @@ const Juego = mongoose.model("Juego",{
         ref:"Usuario"
     }]
     
+
+    
 })
+
+esquemaJuego.methods.toJSON = function(){
+    const juego = this
+    const objJuego = juego.toObject()
+
+    delete objJuego.usuariosCompradores
+    
+    return objJuego
+}
+
+const Juego = mongoose.model("Juego",esquemaJuego)
 
 module.exports = Juego
