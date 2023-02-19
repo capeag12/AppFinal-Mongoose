@@ -54,13 +54,14 @@ router.post("/usuario/comprarJuego/:id", auth, async(req,res)=>{
 })
 
 router.post("/logout", auth,async (req, res)=>{
-    console.log("logout")
+    
     try {
         req.usuario.tokens = req.usuario.tokens.filter((token)=>{
             return token.token !== req.token
         })
         await req.usuario.save()
-        res.send("Deslogueado")
+        res.send("deslogueado")
+        console.log("logout")
     } catch (e) {
         res.status(500).send()
     }

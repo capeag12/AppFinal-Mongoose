@@ -7,10 +7,10 @@ const router = new express.Router()
 
 router.get("/obtenerJuegos",async(req,res)=>{
     try{
-        let juegos = Juego.findAll()
-        
+        let juegos = await Juego.find({})
         res.send(juegos)
     }catch(e){
+        console.log(e)
         res.status(500).send()
     }
 })
